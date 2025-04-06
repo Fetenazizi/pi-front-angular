@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": "2",
+      "name": "Bob Martin",
+      "age": 34,
+      "email": "bob.martin@example.com",
+      "password": "securepass456",
+      "roleType": "user"
+    },
+    {
+      "id": "3",
+      "name": "Charlie Durand",
+      "age": 25,
+      "email": "charlie.durand@example.com",
+      "password": "mypassword789",
+      "roleType": "moderator"
+    },
+    {
+      "id": "4",
+      "name": "Diane Lefevre",
+      "age": 30,
+      "email": "diane.lefevre@example.com",
+      "password": "strongpass321",
+      "roleType": "user"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+
+<div *ngIf="!isBackoffice()">
+    <app-nav-bar></app-nav-bar>
+  </div>
+<router-outlet></router-outlet>
+
+
+<div *ngIf="!isBackoffice()">
+    <app-footer></app-footer>
+  </div>

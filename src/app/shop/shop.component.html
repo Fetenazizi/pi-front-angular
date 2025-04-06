@@ -1,0 +1,8 @@
+<div class="product-grid">
+    <div class="card" *ngFor="let item of products">
+      <h3>{{ item.name }}</h3>
+      <p>{{ item.price | currency:'EUR' }}</p>
+      <button (click)="addToCart(item)">Ajouter au panier</button>
+    </div>
+  </div>
+  
