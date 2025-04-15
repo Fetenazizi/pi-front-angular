@@ -1,7 +1,6 @@
 <div class="cart-container">
   <h2 class="mb-4">🛒 Votre Panier</h2>
 
-  <!-- Si le panier n'est pas vide, affiche les éléments -->
   <div *ngIf="cartItems.length > 0; else emptyCart">
     <div class="list-group mb-4">
       <div *ngFor="let product of cartItems" class="cart-item">
@@ -13,7 +12,16 @@
           <div class="quantity-controls">
             <button (click)="decreaseQuantity(product)">➖</button>
             <span>{{ product.quantity }}</span>
-            <button (click)="increaseQuantity(product)">➕</button>
+            <button
+              (click)="increaseQuantity(product)"
+              [disabled]="product.quantity >= product.stockQuantity"
+            >
+              ➕
+            </button>
+          </div>
+
+          <div *ngIf="product.showMaxMessage" class="max-quantity-message text-danger">
+            ❌ Quantité maximale atteinte (Stock : {{ product.stockQuantity }})
           </div>
         </div>
 
@@ -23,13 +31,11 @@
       </div>
     </div>
 
-    <!-- Affichage du total du panier -->
     <div class="cart-footer">
       <div class="total">
         Total : {{ totalPrice | currency:'EUR' }}
       </div>
 
-      <!-- Boutons d'action -->
       <div class="d-flex justify-content-between">
         <button class="clear-btn" (click)="clearCart()">🧹 Vider le panier</button>
         <button class="btn btn-primary" [routerLink]="'/Shop'">🛍️ Retour au magasin</button>
@@ -37,7 +43,6 @@
     </div>
   </div>
 
-  <!-- Message lorsque le panier est vide -->
   <ng-template #emptyCart>
     <div class="empty-cart">
       🛍️ Votre panier est vide. Commencez vos achats !

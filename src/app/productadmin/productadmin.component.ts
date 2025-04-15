@@ -37,11 +37,12 @@ export class ProductAdminComponent implements OnInit {
       }
     });
   }
+
   async saveProduct() {
     if (!this.selectedProduct) return;
-  
+
     this.isLoading = true;
-  
+
     try {
       // Upload image first if exists
       if (this.selectedImage) {
@@ -49,12 +50,12 @@ export class ProductAdminComponent implements OnInit {
           this.productService.uploadImage(this.selectedImage)
         );
       }
-  
-      // Then create product
+
+      // Then create or update the product
       const save$ = this.isEditing && this.selectedProduct.idProduct
         ? this.productService.updateProduct(this.selectedProduct, this.selectedProduct.idProduct)
         : this.productService.createProduct(this.selectedProduct);
-  
+
       await lastValueFrom(save$);
       this.loadProducts();
       this.cancelEdit();
@@ -63,7 +64,6 @@ export class ProductAdminComponent implements OnInit {
       this.isLoading = false;
     }
   }
-
 
   startEdit(product: Product): void {
     this.selectedProduct = { ...product };
@@ -79,7 +79,8 @@ export class ProductAdminComponent implements OnInit {
       name: '', 
       description: '', 
       category: '',
-      stockQuantity: 0,
+      stockQuantity: 0,  // Newly added
+      quantity: 0,       // Added to fix the error
       price: 0,
       imageUrl: ''
     };

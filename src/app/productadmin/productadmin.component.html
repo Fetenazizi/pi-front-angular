@@ -63,6 +63,20 @@
     </div>
 
     <div class="form-group">
+      <label for="productStockQuantity">Quantité Disponible:</label>
+      <input
+        id="productStockQuantity"
+        type="number"
+        [(ngModel)]="selectedProduct.stockQuantity"
+        name="productStockQuantity"
+        placeholder="Quantité disponible"
+        min="0"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <div class="form-group">
       <label for="productImage">Image du produit:</label>
       <input
         id="productImage"
@@ -88,7 +102,7 @@
     <div class="form-actions">
       <button
         (click)="saveProduct()"
-        [disabled]="isLoading || !selectedProduct.name || !selectedProduct.description || !selectedProduct.price"
+        [disabled]="isLoading || !selectedProduct.name || !selectedProduct.description || !selectedProduct.price || selectedProduct.stockQuantity === 0"
         class="save-button"
       >
         {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
@@ -121,7 +135,8 @@
       <div class="product-info">
         <h3>{{ product.name }}</h3>
         <p class="description">{{ product.description }}</p>
-        <p class="price">{{ product.price   }}Dt</p>
+        <p class="price">{{ product.price | currency:'EUR' }}</p>
+        <p class="stock">Quantité disponible: {{ product.stockQuantity }}</p>
       </div>
 
       <div class="product-image" *ngIf="product.imageUrl">
@@ -129,19 +144,9 @@
       </div>
 
       <div class="product-actions">
-        <button (click)="startEdit(product)" class="edit-button" title="Modifier">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button (click)="deleteProduct(product.idProduct)" class="delete-button" title="Supprimer">
-          <i class="fas fa-trash-alt"></i>
-        </button>
+        <button (click)="startEdit(product)" [disabled]="isLoading">Modifier</button>
+        <button (click)="deleteProduct(product.idProduct)" [disabled]="isLoading">Supprimer</button>
       </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="products.length === 0" class="empty-state">
-      <i class="fas fa-box-open"></i>
-      <p>Aucun produit disponible</p>
     </div>
   </div>
 </div>
