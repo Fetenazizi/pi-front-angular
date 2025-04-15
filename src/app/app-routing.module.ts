@@ -10,6 +10,9 @@ import {ShopComponent} from './shop/shop.component';
 import { CoachingComponent } from './coaching/coaching.component';
 import { CartComponent } from './cart/cart.component';
 import { ProductAdminComponent } from './productadmin/productadmin.component';
+import { DashboardComponent } from './backoffice/dashboard/dashboard.component';
+import { User } from './model/User';
+import { UserComponent } from './user/user.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full' }, // Redirection au chargement
@@ -23,7 +26,12 @@ const routes: Routes = [
   {path: 'Shop' , component:ShopComponent},
   {path :'Coaching' , component:CoachingComponent},
   {path :'Cart' , component:CartComponent}
-  ,{path :'Productadmin' , component:ProductAdminComponent}
+  ,{path :'Productadmin' , component:ProductAdminComponent},
+  {path: 'dashboard', component:DashboardComponent ,
+    children: [
+      {path :'user' , component:UserComponent},]
+  } // Redirection pour les routes non trouvées
+
 
 
   

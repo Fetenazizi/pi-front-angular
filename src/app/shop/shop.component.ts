@@ -1,11 +1,8 @@
-
-// src/app/shop/shop.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../model/Product';
 import { ProductService } from '../service/product.service';
 import { CartService } from '../service/cart.service';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-shop',
@@ -14,8 +11,14 @@ import { Router } from '@angular/router';
 })
 export class ShopComponent implements OnInit {
   products: Product[] = [];
+  filteredProducts: Product[] = []; // Liste des produits filtrés
   isLoading = false;
   error: string | null = null;
+  
+  // Variables pour recherche et filtrage
+  searchQuery: string = '';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
 
   constructor(
     private productService: ProductService,
@@ -27,6 +30,7 @@ export class ShopComponent implements OnInit {
     this.loadProducts();
   }
 
+  // Méthode pour ajouter un produit au panier
   addToCart(product: Product): void {
     this.cartService.addToCart(product).subscribe({
       next: () => {
@@ -39,13 +43,15 @@ export class ShopComponent implements OnInit {
     });
   }
 
+  // Chargement des produits depuis le service
   loadProducts(): void {
     this.isLoading = true;
     this.error = null;
-    
+
     this.productService.getAllProducts().subscribe({
       next: (products) => {
         this.products = products;
+        this.filteredProducts = products; // Initialement, on affiche tous les produits
         this.isLoading = false;
       },
       error: (err) => {
@@ -55,68 +61,19 @@ export class ShopComponent implements OnInit {
       }
     });
   }
+
+  // Filtrer les produits en fonction de la recherche et des critères de prix
+  filterProducts(): void {
+    this.filteredProducts = this.products.filter(product => {
+      // Filtrer par nom
+      const matchesName = product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      // Filtrer par prix
+      const matchesPrice = 
+        (this.minPrice === null || product.price >= this.minPrice) &&
+        (this.maxPrice === null || product.price <= this.maxPrice);
+
+      return matchesName && matchesPrice;
+    });
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/*import { Component, OnInit } from '@angular/core';
-import { Product } from '../model/Product';
-import { ProductService } from '../service/product.service';
-
-@Component({
-  selector: 'app-shop',
-  templateUrl: './shop.component.html',
-  styleUrls: ['./shop.component.css']
-})
-  export class ShopComponent implements OnInit {
-    // Définition de la liste des produits
-    productss = [
-      { name: 'Biberon Anti-Colique', price: 15, image: 'assets/biberon.jpg' },
-      { name: 'Poussette Bébé', price: 250, image: 'assets/poussette.jpg' },
-      { name: 'Chaise Haute', price: 80, image: 'assets/chaise-haute.jpg' }
-    ];
-    products: Product[] = [];
-  isLoading = false;
-  error: string | null = null;
-  
-  constructor(private productService: ProductService) {}
-  
-    ngOnInit(): void {
-      this.loadProducts();
-      // Ce code sera exécuté lorsque le composant sera initialisé
-    }
-  
-    // Méthode pour ajouter un produit au panier
-    addToCart(product: any): void {
-      console.log(`Produit ajouté : ${product.name}`);
-    }
-  
-    loadProducts(): void {
-      this.isLoading = true;
-      this.error = null;
-      
-      this.productService.getAllProducts().subscribe({
-        next: (products) => {
-          this.products = products;
-          this.isLoading = false;
-        //  console.error(products);
-        },
-        error: (err) => {
-          this.error = 'Failed to load products';
-          this.isLoading = false;
-          console.error(err);
-        }
-      });
-    }
-
-    
-}*/
