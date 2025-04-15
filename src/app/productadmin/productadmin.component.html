@@ -10,38 +10,38 @@
   <!-- Edit/Create Form -->
   <div *ngIf="selectedProduct" class="edit-form">
     <h3>{{ isEditing ? 'Modifier' : 'Ajouter' }} un produit</h3>
-    
+
     <div class="form-group">
       <label for="productName">Nom:</label>
-      <input 
+      <input
         id="productName"
-        [(ngModel)]="selectedProduct.name" 
-        name="productName" 
-        placeholder="Nom du produit" 
+        [(ngModel)]="selectedProduct.name"
+        name="productName"
+        placeholder="Nom du produit"
         required
         [disabled]="isLoading"
-      >
+      />
     </div>
 
     <div class="form-group">
-      <label for="category">category:</label>
-      <input 
+      <label for="category">Catégorie:</label>
+      <input
         id="category"
-        [(ngModel)]="selectedProduct.category" 
-        name="category" 
-        placeholder="category du produit" 
+        [(ngModel)]="selectedProduct.category"
+        name="category"
+        placeholder="Catégorie du produit"
         required
         [disabled]="isLoading"
-      >
+      />
     </div>
 
     <div class="form-group">
       <label for="productDescription">Description:</label>
-      <textarea 
+      <textarea
         id="productDescription"
-        [(ngModel)]="selectedProduct.description" 
-        name="productDescription" 
-        placeholder="Description" 
+        [(ngModel)]="selectedProduct.description"
+        name="productDescription"
+        placeholder="Description"
         required
         [disabled]="isLoading"
       ></textarea>
@@ -49,45 +49,52 @@
 
     <div class="form-group">
       <label for="productPrice">Prix (€):</label>
-      <input 
+      <input
         id="productPrice"
-        type="number" 
-        [(ngModel)]="selectedProduct.price" 
-        name="productPrice" 
-        placeholder="Prix" 
-        min="0" 
-        step="0.01" 
+        type="number"
+        [(ngModel)]="selectedProduct.price"
+        name="productPrice"
+        placeholder="Prix"
+        min="0"
+        step="0.01"
         required
         [disabled]="isLoading"
-      >
+      />
     </div>
+
     <div class="form-group">
       <label for="productImage">Image du produit:</label>
-      <input 
+      <input
         id="productImage"
         type="file"
         (change)="onImageSelected($event)"
         [disabled]="isLoading"
         accept="image/*"
-      >
+      />
+      <button class="camera-button" type="button" (click)="startCamera()" *ngIf="!showCameraPreview">📷 Prendre une photo</button>
     </div>
-    
+
+    <!-- Camera preview -->
+    <div *ngIf="showCameraPreview" class="camera-container">
+      <video id="camera-preview" autoplay></video>
+      <button type="button" (click)="capturePhoto()">📸 Capturer</button>
+    </div>
+
     <!-- Aperçu de l'image -->
     <div *ngIf="imagePreview" class="image-preview">
       <img [src]="imagePreview" alt="Aperçu de l'image" />
     </div>
-    
 
     <div class="form-actions">
-      <button 
-        (click)="saveProduct()" 
+      <button
+        (click)="saveProduct()"
         [disabled]="isLoading || !selectedProduct.name || !selectedProduct.description || !selectedProduct.price"
         class="save-button"
       >
         {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
       </button>
-      <button 
-        (click)="cancelEdit()" 
+      <button
+        (click)="cancelEdit()"
         [disabled]="isLoading"
         class="cancel-button"
       >
@@ -98,9 +105,9 @@
 
   <!-- Add Product Button -->
   <div class="add-product-container">
-    <button 
-      *ngIf="!selectedProduct" 
-      (click)="startAdd()" 
+    <button
+      *ngIf="!selectedProduct"
+      (click)="startAdd()"
       class="add-button"
       [disabled]="isLoading"
     >
@@ -116,20 +123,16 @@
         <p class="description">{{ product.description }}</p>
         <p class="price">{{ product.price | currency:'EUR' }}</p>
       </div>
-      
+
+      <div class="product-image" *ngIf="product.imageUrl">
+        <img [src]="product.imageUrl" alt="{{ product.name }}" />
+      </div>
+
       <div class="product-actions">
-        <button 
-          (click)="startEdit(product)" 
-          class="edit-button"
-          title="Modifier"
-        >
+        <button (click)="startEdit(product)" class="edit-button" title="Modifier">
           <i class="fas fa-edit"></i>
         </button>
-        <button 
-          (click)="deleteProduct(product.idProduct)" 
-          class="delete-button"
-          title="Supprimer"
-        >
+        <button (click)="deleteProduct(product.idProduct)" class="delete-button" title="Supprimer">
           <i class="fas fa-trash-alt"></i>
         </button>
       </div>
