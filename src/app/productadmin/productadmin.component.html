@@ -24,12 +24,12 @@
     </div>
 
     <div class="form-group">
-      <label for="category">Catégorie:</label>
+      <label for="category">category:</label>
       <input 
         id="category"
         [(ngModel)]="selectedProduct.category" 
         name="category" 
-        placeholder="Catégorie du produit" 
+        placeholder="category du produit" 
         required
         [disabled]="isLoading"
       >
@@ -61,48 +61,23 @@
         [disabled]="isLoading"
       >
     </div>
-    
     <div class="form-group">
       <label for="productImage">Image du produit:</label>
-      <div class="image-input-options">
-        <input 
-          id="productImage"
-          type="file"
-          (change)="onImageSelected($event)"
-          [disabled]="isLoading"
-          accept="image/*"
-          capture="environment"
-          #fileInput
-        >
-        <button 
-          type="button" 
-          (click)="startCamera()"
-          [disabled]="isLoading"
-          class="camera-button"
-        >
-          <i class="fas fa-camera"></i> Prendre une photo
-        </button>
-      </div>
+      <input 
+        id="productImage"
+        type="file"
+        (change)="onImageSelected($event)"
+        [disabled]="isLoading"
+        accept="image/*"
+      >
     </div>
     
-    <!-- Camera Preview -->
-    <div *ngIf="showCameraPreview" class="camera-preview-container">
-      <video id="camera-preview" autoplay playsinline></video>
-      <div class="camera-actions">
-        <button (click)="capturePhoto()" class="capture-button">
-          <i class="fas fa-camera"></i> Prendre la photo
-        </button>
-        <button (click)="stopCamera()" class="cancel-camera-button">
-          <i class="fas fa-times"></i> Annuler
-        </button>
-      </div>
-    </div>
-    
-    <!-- Image Preview -->
+    <!-- Aperçu de l'image -->
     <div *ngIf="imagePreview" class="image-preview">
       <img [src]="imagePreview" alt="Aperçu de l'image" />
     </div>
     
+
     <div class="form-actions">
       <button 
         (click)="saveProduct()" 
@@ -140,7 +115,6 @@
         <h3>{{ product.name }}</h3>
         <p class="description">{{ product.description }}</p>
         <p class="price">{{ product.price | currency:'EUR' }}</p>
-        <img *ngIf="product.imageUrl" [src]="product.imageUrl" class="product-image" alt="Product image">
       </div>
       
       <div class="product-actions">

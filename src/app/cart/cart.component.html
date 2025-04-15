@@ -1,27 +1,45 @@
-<div class="container mt-5">
+<div class="cart-container">
   <h2 class="mb-4">🛒 Votre Panier</h2>
 
   <!-- Si le panier n'est pas vide, affiche les éléments -->
   <div *ngIf="cartItems.length > 0; else emptyCart">
     <div class="list-group mb-4">
-      <div *ngFor="let product of cartItems" class="list-group-item list-group-item-action rounded-3 shadow-sm mb-2">
-        <h5 class="mb-1">🧸 {{ product.name }}</h5>
-        <p class="mb-1 text-muted">📄 {{ product.description }}</p>
-        <p class="fw-bold">💶 Prix : {{ product.price | currency:'EUR' }}</p>
-        <p class="text-muted">Quantité : {{ product.quantity }}</p>
-        <button (click)="removeFromCart(product.idProduct)">Remove</button>
+      <div *ngFor="let product of cartItems" class="cart-item">
+        <div class="product-info">
+          <h5 class="mb-1">🧸 {{ product.name }}</h5>
+          <p class="mb-1 text-muted">📄 {{ product.description }}</p>
+          <p class="fw-bold">💶 Prix : {{ product.price | currency:'EUR' }}</p>
+
+          <div class="quantity-controls">
+            <button (click)="decreaseQuantity(product)">➖</button>
+            <span>{{ product.quantity }}</span>
+            <button (click)="increaseQuantity(product)">➕</button>
+          </div>
+        </div>
+
+        <button class="remove-btn" (click)="removeFromCart(product.idProduct)">
+          🗑️ Supprimer
+        </button>
       </div>
     </div>
 
-    <!-- Bouton pour vider le panier -->
-    <button class="btn btn-danger w-100" (click)="clearCart()">
-      🧹 Vider le panier
-    </button>
+    <!-- Affichage du total du panier -->
+    <div class="cart-footer">
+      <div class="total">
+        Total : {{ totalPrice | currency:'EUR' }}
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="d-flex justify-content-between">
+        <button class="clear-btn" (click)="clearCart()">🧹 Vider le panier</button>
+        <button class="btn btn-primary" [routerLink]="'/Shop'">🛍️ Retour au magasin</button>
+      </div>
+    </div>
   </div>
 
   <!-- Message lorsque le panier est vide -->
   <ng-template #emptyCart>
-    <div class="alert alert-info text-center mt-4" role="alert">
+    <div class="empty-cart">
       🛍️ Votre panier est vide. Commencez vos achats !
     </div>
   </ng-template>

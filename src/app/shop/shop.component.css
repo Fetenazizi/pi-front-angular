@@ -1,0 +1,12 @@
+.product-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .no-image {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+  }
+  

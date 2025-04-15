@@ -1,4 +1,4 @@
-// src/app/components/cart/cart.component.ts
+// src/app/components/cart/cart.component.ts 
 import { Component, OnInit } from '@angular/core';
 import { CartService } from '../service/cart.service';
 import { Product } from '../model/Product';
@@ -9,71 +9,66 @@ import { Product } from '../model/Product';
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-  cartItems: (Product & { quantity?: number })[] = [];
+  cartItems: (Product & { quantity?: number, cartId?: string })[] = [];
   errorMessage: string = '';
+  totalPrice: number = 0; // Variable pour stocker le total
 
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
- //   this.loadAllCarts();
- this.loadCartById('2'); // Remplacez 'cartId' par l'ID réel du panier que vous souhaitez charger
-  }
-  loadAllCarts(): void {
-    this.cartService.getAllCarts().subscribe({
-      next: (carts) => {
-        console.log("✅ Réponse complète reçue depuis le backend :", carts);
-
-        // Filtrage et transformation des données
-        this.cartItems = carts.flatMap(cart =>
-          (cart.items ?? [])
-            .filter((item: { product: { name: string; price: number; description: string } }) => {
-              // Filtre les produits avec un nom valide, un prix supérieur à 0 et une description non vide
-              return item.product && item.product.name && item.product.price > 0 && item.product.description;
-            })
-            .map((item: any) => ({
-              ...item.product,
-              quantity: item.quantity
-            }))
-        );
-      },
-     
-    });
+    this.loadCartById('2'); // Remplace avec le vrai cartId si besoin
   }
 
   loadCartById(cartId: string): void {
     this.cartService.getCart(cartId).subscribe({
-      next: (cart:any) => {
+      next: (cart: any) => {
         console.log("✅ Cart received from backend:", cart);
-  
-        // Process items from the single cart
         this.cartItems = (cart.items ?? [])
-          .filter((item:any) => {
-            return (
-              item.product &&
-              item.product.name &&
-              item.product.price > 0 &&
-              item.product.description
-            );
-          })
-          .map((item:any) => ({
+          .filter((item: any) =>
+            item.product &&
+            item.product.name &&
+            item.product.price > 0 &&
+            item.product.description
+          )
+          .map((item: any) => ({
             ...item.product,
             quantity: item.quantity,
-            // Optional: Include cartId if needed
-            cartId: cart.id 
+            cartId: cart.id
           }));
+        this.calculateTotal(); // Recalculer le total à chaque chargement
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error("Error loading cart:", err);
+        this.errorMessage = 'Erreur lors du chargement du panier.';
       }
     });
+  }
+
+  // Calculer le total en fonction de la quantité et du prix
+  calculateTotal(): void {
+    this.totalPrice = this.cartItems.reduce((total, item) => {
+      return total + (item.price * (item.quantity || 1)); // Calcul total
+    }, 0);
+  }
+
+  increaseQuantity(item: Product & { quantity?: number }) {
+    item.quantity = (item.quantity || 0) + 1;
+    this.calculateTotal(); // Recalculer après modification de la quantité
+  }
+
+  decreaseQuantity(item: Product & { quantity?: number, idProduct: number }) {
+    if (item.quantity && item.quantity > 1) {
+      item.quantity--;
+    } else if (item.quantity === 1) {
+      this.removeFromCart(item.idProduct);
+    }
+    this.calculateTotal(); // Recalculer après modification de la quantité
   }
 
   removeFromCart(productId: number) {
     this.cartService.removeFromCart(productId).subscribe({
       next: () => {
-
-        // Refresh your cart data after removal
-        this.loadCartById('2')
+        this.loadCartById('2');
       },
       error: (err) => {
         this.errorMessage = 'Error removing product from cart';
@@ -82,8 +77,8 @@ export class CartComponent implements OnInit {
     });
   }
 
- 
   clearCart(): void {
     this.cartItems = [];
+    this.totalPrice = 0; // Réinitialiser le total
   }
 }
