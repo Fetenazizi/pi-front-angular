@@ -218,3 +218,35 @@ button i {
   border-radius: 8px;
   display: block;
 }
+/* Boutons de l'interface */
+.save-button, .add-button, .edit-button, .delete-button, .cancel-button {
+  background-color: #FF4880; /* Couleur rose vif pour les boutons */
+  color: white; /* Texte en blanc */
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.save-button:hover, .add-button:hover, .edit-button:hover, .delete-button:hover, .cancel-button:hover {
+  background-color: #FF3D6A; /* Légère variation de couleur au survol */
+}
+
+.save-button:disabled, .add-button:disabled, .edit-button:disabled, .delete-button:disabled, .cancel-button:disabled {
+  background-color: #D4D4D4; /* Boutons désactivés en gris */
+  cursor: not-allowed;
+}
+
+.camera-button {
+  background-color: #FF4880;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.camera-button:hover {
+  background-color: #FF3D6A;
+}
