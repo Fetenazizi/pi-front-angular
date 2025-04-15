@@ -1,0 +1,170 @@
+<div class="admin-container">
+  <h2>Gestion des Produits</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <!-- Edit/Create Form -->
+  <div *ngIf="selectedProduct" class="edit-form">
+    <h3>{{ isEditing ? 'Modifier' : 'Ajouter' }} un produit</h3>
+    
+    <div class="form-group">
+      <label for="productName">Nom:</label>
+      <input 
+        id="productName"
+        [(ngModel)]="selectedProduct.name" 
+        name="productName" 
+        placeholder="Nom du produit" 
+        required
+        [disabled]="isLoading"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="category">Catégorie:</label>
+      <input 
+        id="category"
+        [(ngModel)]="selectedProduct.category" 
+        name="category" 
+        placeholder="Catégorie du produit" 
+        required
+        [disabled]="isLoading"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="productDescription">Description:</label>
+      <textarea 
+        id="productDescription"
+        [(ngModel)]="selectedProduct.description" 
+        name="productDescription" 
+        placeholder="Description" 
+        required
+        [disabled]="isLoading"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="productPrice">Prix (€):</label>
+      <input 
+        id="productPrice"
+        type="number" 
+        [(ngModel)]="selectedProduct.price" 
+        name="productPrice" 
+        placeholder="Prix" 
+        min="0" 
+        step="0.01" 
+        required
+        [disabled]="isLoading"
+      >
+    </div>
+    
+    <div class="form-group">
+      <label for="productImage">Image du produit:</label>
+      <div class="image-input-options">
+        <input 
+          id="productImage"
+          type="file"
+          (change)="onImageSelected($event)"
+          [disabled]="isLoading"
+          accept="image/*"
+          capture="environment"
+          #fileInput
+        >
+        <button 
+          type="button" 
+          (click)="startCamera()"
+          [disabled]="isLoading"
+          class="camera-button"
+        >
+          <i class="fas fa-camera"></i> Prendre une photo
+        </button>
+      </div>
+    </div>
+    
+    <!-- Camera Preview -->
+    <div *ngIf="showCameraPreview" class="camera-preview-container">
+      <video id="camera-preview" autoplay playsinline></video>
+      <div class="camera-actions">
+        <button (click)="capturePhoto()" class="capture-button">
+          <i class="fas fa-camera"></i> Prendre la photo
+        </button>
+        <button (click)="stopCamera()" class="cancel-camera-button">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+      </div>
+    </div>
+    
+    <!-- Image Preview -->
+    <div *ngIf="imagePreview" class="image-preview">
+      <img [src]="imagePreview" alt="Aperçu de l'image" />
+    </div>
+    
+    <div class="form-actions">
+      <button 
+        (click)="saveProduct()" 
+        [disabled]="isLoading || !selectedProduct.name || !selectedProduct.description || !selectedProduct.price"
+        class="save-button"
+      >
+        {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+      <button 
+        (click)="cancelEdit()" 
+        [disabled]="isLoading"
+        class="cancel-button"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Product Button -->
+  <div class="add-product-container">
+    <button 
+      *ngIf="!selectedProduct" 
+      (click)="startAdd()" 
+      class="add-button"
+      [disabled]="isLoading"
+    >
+      <i class="fas fa-plus"></i> Ajouter un produit
+    </button>
+  </div>
+
+  <!-- Products List -->
+  <div class="product-list" *ngIf="!isLoading">
+    <div *ngFor="let product of products" class="product-item">
+      <div class="product-info">
+        <h3>{{ product.name }}</h3>
+        <p class="description">{{ product.description }}</p>
+        <p class="price">{{ product.price | currency:'EUR' }}</p>
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" class="product-image" alt="Product image">
+      </div>
+      
+      <div class="product-actions">
+        <button 
+          (click)="startEdit(product)" 
+          class="edit-button"
+          title="Modifier"
+        >
+          <i class="fas fa-edit"></i>
+        </button>
+        <button 
+          (click)="deleteProduct(product.idProduct)" 
+          class="delete-button"
+          title="Supprimer"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="products.length === 0" class="empty-state">
+      <i class="fas fa-box-open"></i>
+      <p>Aucun produit disponible</p>
+    </div>
+  </div>
+</div>

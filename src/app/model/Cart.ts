@@ -1,8 +1,10 @@
+import { CartItem } from './CartItem';
+
 export class Cart {
-    constructor(
-      public idCart: number = 0,
-      //public items: CartItem[] = [],
-      public totalPrice: number = 0,
-      public purchaseDate: string = ""
-    ) {}
-  }
+  constructor(
+    public idCart: number,
+    public totalPrice: number,
+    public purchaseDate: string,
+    public items: CartItem[] = []
+  ) {}
+}

@@ -18,6 +18,10 @@ import { AppointmentComponent } from './appointment/appointment.component';
 import { ShopComponent } from './shop/shop.component';
 import { CoachingComponent } from './coaching/coaching.component';
 import { CartComponent } from './cart/cart.component';
+import { ProductAdminComponent } from './productadmin/productadmin.component';
+
+
+
 
 @NgModule({
   declarations: [
@@ -32,7 +36,10 @@ import { CartComponent } from './cart/cart.component';
     AppointmentComponent,
     ShopComponent,
     CoachingComponent,
-    CartComponent
+    CartComponent,
+    ProductAdminComponent,
+    
+
    
     
     

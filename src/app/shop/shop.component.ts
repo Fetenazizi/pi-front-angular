@@ -31,7 +31,7 @@ export class ShopComponent implements OnInit {
     this.cartService.addToCart(product).subscribe({
       next: () => {
         console.log('Produit ajouté au panier');
-        this.router.navigate(['/cart']);
+        this.router.navigate(['/Cart']);
       },
       error: (err) => {
         console.error('Erreur lors de l\'ajout au panier', err);
