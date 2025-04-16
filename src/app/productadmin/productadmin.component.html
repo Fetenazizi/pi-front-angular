@@ -1,13 +1,13 @@
 <div class="admin-container">
   <h2>Gestion des Produits</h2>
 
-  <!-- Loading Indicator -->
+  <!-- Indicateur de chargement -->
   <div *ngIf="isLoading" class="loading-indicator">
     <div class="spinner"></div>
     <span>Chargement en cours...</span>
   </div>
 
-  <!-- Edit/Create Form -->
+  <!-- Formulaire d'ajout/modification -->
   <div *ngIf="selectedProduct" class="edit-form">
     <h3>{{ isEditing ? 'Modifier' : 'Ajouter' }} un produit</h3>
 
@@ -88,7 +88,7 @@
       <button class="camera-button" type="button" (click)="startCamera()" *ngIf="!showCameraPreview">📷 Prendre une photo</button>
     </div>
 
-    <!-- Camera preview -->
+    <!-- Aperçu de la caméra -->
     <div *ngIf="showCameraPreview" class="camera-container">
       <video id="camera-preview" autoplay></video>
       <button type="button" (click)="capturePhoto()">📸 Capturer</button>
@@ -114,38 +114,45 @@
       >
         Annuler
       </button>
+      <!-- Nouveau bouton pour revenir à la liste -->
+      <button
+        type="button"
+        (click)="cancelEdit()"
+        [disabled]="isLoading"
+        class="return-button"
+      >
+        Retour à la liste
+      </button>
     </div>
   </div>
 
-  <!-- Add Product Button -->
-  <div class="add-product-container">
-    <button
-      *ngIf="!selectedProduct"
-      (click)="startAdd()"
-      class="add-button"
-      [disabled]="isLoading"
-    >
-      <i class="fas fa-plus"></i> Ajouter un produit
-    </button>
-  </div>
+  <!-- Bouton pour ajouter un produit et liste des produits affichés quand aucun produit n'est sélectionné -->
+  <div *ngIf="!selectedProduct && !isLoading">
+    <!-- Bouton d'ajout -->
+    <div class="add-product-container">
+      <button (click)="startAdd()" class="add-button">
+        <i class="fas fa-plus"></i> Ajouter un produit
+      </button>
+    </div>
 
-  <!-- Products List -->
-  <div class="product-list" *ngIf="!isLoading">
-    <div *ngFor="let product of products" class="product-item">
-      <div class="product-info">
-        <h3>{{ product.name }}</h3>
-        <p class="description">{{ product.description }}</p>
-        <p class="price">{{ product.price  }}DT</p>
-        <p class="stock">Quantité disponible: {{ product.stockQuantity }}</p>
-      </div>
+    <!-- Liste des produits -->
+    <div class="product-list">
+      <div *ngFor="let product of products" class="product-item">
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="description">{{ product.description }}</p>
+          <p class="price">{{ product.price }} DT</p>
+          <p class="stock">Quantité disponible: {{ product.stockQuantity }}</p>
+        </div>
 
-      <div class="product-image" *ngIf="product.imageUrl">
-        <img [src]="product.imageUrl" alt="{{ product.name }}" />
-      </div>
+        <div class="product-image" *ngIf="product.imageUrl">
+          <img [src]="product.imageUrl" alt="{{ product.name }}" />
+        </div>
 
-      <div class="product-actions">
-        <button (click)="startEdit(product)" [disabled]="isLoading">Modifier</button>
-        <button (click)="deleteProduct(product.idProduct)" [disabled]="isLoading">Supprimer</button>
+        <div class="product-actions">
+          <button (click)="startEdit(product)" [disabled]="isLoading">Modifier</button>
+          <button (click)="deleteProduct(product.idProduct)" [disabled]="isLoading">Supprimer</button>
+        </div>
       </div>
     </div>
   </div>
