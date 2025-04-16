@@ -48,7 +48,7 @@
     </div>
 
     <div class="form-group">
-      <label for="productPrice">Prix (€):</label>
+      <label for="productPrice">Prix (DT):</label>
       <input
         id="productPrice"
         type="number"
@@ -135,7 +135,7 @@
       <div class="product-info">
         <h3>{{ product.name }}</h3>
         <p class="description">{{ product.description }}</p>
-        <p class="price">{{ product.price | currency:'EUR' }}</p>
+        <p class="price">{{ product.price  }}DT</p>
         <p class="stock">Quantité disponible: {{ product.stockQuantity }}</p>
       </div>
 

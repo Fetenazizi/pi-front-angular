@@ -9,9 +9,18 @@ import { Product } from '../model/Product';
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-  cartItems: (Product & { quantity?: number, cartId?: string, stockQuantity?: number, showMaxMessage?: boolean })[] = [];
+  cartItems: (Product & {
+    quantity?: number;
+    cartId?: string;
+    stockQuantity?: number;
+    showMaxMessage?: boolean;
+    promotionPercentage?: number;
+  })[] = [];
   errorMessage: string = '';
-  totalPrice: number = 0;
+  rawTotal: number = 0;
+  discountedTotal: number = 0;
+  autoDiscountApplied: boolean = false;
+  discountRate: number = 0;
 
   constructor(private cartService: CartService, private http: HttpClient) {}
 
@@ -22,20 +31,24 @@ export class CartComponent implements OnInit {
   loadCartById(cartId: string): void {
     this.cartService.getCart(cartId).subscribe({
       next: (cart: any) => {
-        const items = (cart.items ?? [])
-          .filter((item: any) => item.product && item.product.name && item.product.price > 0)
+        this.cartItems = (cart.items ?? [])
+          .filter((item: any) =>
+            item.product &&
+            item.product.name &&
+            item.product.price > 0 &&
+            item.product.description
+          )
           .map((item: any) => ({
             ...item.product,
             quantity: item.quantity,
             cartId: cart.id,
+            promotionPercentage: item.product.promotionPercentage || 0,
             showMaxMessage: false
           }));
-
-        this.cartItems = items;
-        this.loadStockQuantities(); // Charge les stocks à part
+        this.loadStockQuantities();
       },
       error: (err: any) => {
-        console.error("Error loading cart:", err);
+        console.error("Erreur lors du chargement du panier:", err);
         this.errorMessage = 'Erreur lors du chargement du panier.';
       }
     });
@@ -58,12 +71,27 @@ export class CartComponent implements OnInit {
   }
 
   calculateTotal(): void {
-    this.totalPrice = this.cartItems.reduce((total, item) => {
-      return total + (item.price * (item.quantity || 1));
+    this.rawTotal = this.cartItems.reduce((total, item) => {
+      const promo = item.promotionPercentage || 0;
+      const discountedPrice = item.price * (1 - promo / 100);
+      return total + discountedPrice * (item.quantity || 1);
     }, 0);
+
+    if (this.rawTotal > 1200) {
+      this.discountRate = 40;
+    } else if (this.rawTotal > 800) {
+      this.discountRate = 25;
+    } else if (this.rawTotal > 500) {
+      this.discountRate = 15;
+    } else {
+      this.discountRate = 0;
+    }
+
+    this.autoDiscountApplied = this.discountRate > 0;
+    this.discountedTotal = this.rawTotal * (1 - this.discountRate / 100);
   }
 
-  increaseQuantity(item: Product & { quantity?: number, stockQuantity?: number, showMaxMessage?: boolean }) {
+  increaseQuantity(item: Product & { quantity?: number; stockQuantity?: number; showMaxMessage?: boolean }) {
     if ((item.quantity ?? 0) < (item.stockQuantity ?? 0)) {
       item.quantity = (item.quantity || 0) + 1;
       item.showMaxMessage = false;
@@ -73,7 +101,7 @@ export class CartComponent implements OnInit {
     this.calculateTotal();
   }
 
-  decreaseQuantity(item: Product & { quantity?: number, idProduct: number, showMaxMessage?: boolean }) {
+  decreaseQuantity(item: Product & { quantity?: number; idProduct: number; showMaxMessage?: boolean }) {
     if (item.quantity && item.quantity > 1) {
       item.quantity--;
     } else if (item.quantity === 1) {
@@ -85,18 +113,19 @@ export class CartComponent implements OnInit {
 
   removeFromCart(productId: number) {
     this.cartService.removeFromCart(productId).subscribe({
-      next: () => {
-        this.loadCartById('2');
-      },
+      next: () => this.loadCartById('2'),
       error: (err) => {
         this.errorMessage = 'Erreur lors de la suppression du produit.';
-        console.error('Error removing product:', err);
+        console.error('Erreur suppression:', err);
       }
     });
   }
 
   clearCart(): void {
     this.cartItems = [];
-    this.totalPrice = 0;
+    this.rawTotal = 0;
+    this.discountedTotal = 0;
+    this.discountRate = 0;
+    this.autoDiscountApplied = false;
   }
 }
