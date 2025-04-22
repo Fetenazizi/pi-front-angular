@@ -113,3 +113,46 @@
   background-color: #0069d9;
   border-color: #0062cc;
 }
+
+/* Payment section styles */
+.payment-section {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.payment-method {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.payment-method:hover {
+  background-color: #f8f9fa;
+}
+
+.payment-method.selected {
+  background-color: #e9f7fe;
+  border-color: #86b7fe;
+}
+
+.pay-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Success message styles */
+.alert-success {
+  background-color: #e8f5e9;
+  border-color: #c8e6c9;
+  color: #2e7d32;
+}

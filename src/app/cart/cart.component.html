@@ -9,9 +9,11 @@
           <p class="mb-1 text-muted">📄 {{ product.description }}</p>
           <p class="fw-bold">
             💶 Prix : {{
-              (product.price * (1 - (product.promotionPercentage || 0) / 100))
-              
+              (product.price * (1 - (product.promotionPercentage || 0) / 100)) | number:'1.2-2'
             }}Dt
+            <span *ngIf="product.promotionPercentage" class="text-success">
+              ({{ product.promotionPercentage }}% de réduction!)
+            </span>
           </p>
 
           <div class="quantity-controls">
@@ -19,23 +21,81 @@
             <span>{{ product.quantity }}</span>
             <button (click)="increaseQuantity(product)">➕</button>
           </div>
+          <div *ngIf="product.showMaxMessage" class="text-danger">
+            Quantité maximale disponible atteinte!
+          </div>
         </div>
 
         <button class="remove-btn" (click)="removeFromCart(product.idProduct)">
-          🗑️ Supprimer
+          🗑️ 
         </button>
       </div>
     </div>
 
     <div class="cart-footer">
       <div class="total">
-        🧾 Total brut : {{ rawTotal  }}Dt
+        🧾 Total brut : {{ rawTotal | number:'1.2-2' }}Dt
       </div>
 
       <div *ngIf="autoDiscountApplied" class="discount-info">
         🎉 Réduction automatique de {{ discountRate }}% appliquée !
         <br />
-        💳 Total après réduction : {{ discountedTotal  }}Dt
+        💳 Total après réduction : {{ discountedTotal | number:'1.2-2' }}Dt
+      </div>
+     
+
+      <div class="payment-section mt-4">
+        <h5 class="mb-3">💳 Méthode de paiement</h5>
+        
+        <div class="payment-methods mb-3">
+          <div *ngFor="let method of paymentMethods" 
+               class="payment-method"
+               [class.selected]="method.selected"
+               (click)="selectPaymentMethod(method.id)">
+            {{ method.name }}
+          </div>
+        </div>
+      
+        <!-- Credit Card/Bank Transfer Payment -->
+        <div *ngIf="selectedPaymentMethod !== 'paypal'">
+          <button class="btn btn-success pay-btn" 
+                  (click)="processPayment()"
+                  [disabled]="paymentProcessing || cartItems.length === 0">
+            <span *ngIf="!paymentProcessing">🛒 Payer {{ discountedTotal | number:'1.2-2' }}Dt</span>
+            <span *ngIf="paymentProcessing">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Traitement en cours...
+            </span>
+          </button>
+        </div>
+      
+        <!-- PayPal Payment -->
+        <div *ngIf="selectedPaymentMethod === 'paypal'">
+          <div *ngIf="!paypalLoaded" class="paypal-loading">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Chargement de PayPal...</p>
+          </div>
+          <div [id]="paypalButtonId"></div>
+          <p class="text-muted small mt-2">
+            <i class="bi bi-info-circle"></i> Environ {{ (discountedTotal / 3) | number:'1.2-2' }} USD
+            <br>Note: This is a test environment. No real payments will be processed.
+          </p>
+        </div>
+      
+        <!-- Payment Success Message -->
+        <div *ngIf="paymentSuccess" class="alert alert-success mt-3">
+          <h5>🎉 Paiement réussi!</h5>
+          <p>Votre commande #{{orderNumber}} a été confirmée.</p>
+          <p>Un email de confirmation vous a été envoyé.</p>
+          <button class="btn btn-outline-success" routerLink="/Shop">Retour à la boutique</button>
+        </div>
+      
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+          {{ errorMessage }}
+        </div>
       </div>
 
       <div class="d-flex justify-content-between mt-3">
@@ -46,8 +106,13 @@
   </div>
 
   <ng-template #emptyCart>
-    <div class="empty-cart">
-      🛍️ Votre panier est vide. Commencez vos achats !
+    <div class="empty-cart text-center">
+      <div class="empty-icon">🛍️</div>
+      <h4>Votre panier est vide</h4>
+      <p>Commencez vos achats pour découvrir nos produits!</p>
+      <button class="btn btn-primary mt-3" [routerLink]="'/Shop'">
+        <i class="bi bi-cart"></i> Voir les produits
+      </button>
     </div>
   </ng-template>
 </div>

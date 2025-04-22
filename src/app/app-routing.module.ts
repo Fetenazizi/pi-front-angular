@@ -29,7 +29,9 @@ const routes: Routes = [
   ,{path :'Productadmin' , component:ProductAdminComponent},
   {path: 'dashboard', component:DashboardComponent ,
     children: [
-      {path :'user' , component:UserComponent},]
+      {path :'user' , component:UserComponent},
+      {path :'productA' , component:ProductAdminComponent},
+      ] 
   } // Redirection pour les routes non trouvées
 
 

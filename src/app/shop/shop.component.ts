@@ -3,7 +3,8 @@ import { Product } from '../model/Product';
 import { ProductService } from '../service/product.service';
 import { CartService } from '../service/cart.service';
 import { Router } from '@angular/router';
-
+import OpenAI from 'openai';
+import { environment } from 'src/environments/environments';
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
@@ -14,7 +15,7 @@ export class ShopComponent implements OnInit {
   filteredProducts: Product[] = []; // Liste des produits filtrés
   isLoading = false;
   error: string | null = null;
-  
+  private apikey= environment.apikey;
   // Variables pour recherche et filtrage
   searchQuery: string = '';
   minPrice: number | null = null;
@@ -29,6 +30,43 @@ export class ShopComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
   }
+  
+  client = new OpenAI({
+    baseURL: environment.baseURL,
+    apiKey: this.apikey,
+    dangerouslyAllowBrowser: true,
+  });
+  responseHistory: string [] = [];
+  responseText: string = '';
+
+  async askQuestion(prompt: string){
+    prompt+= `You are an expert in e-commerce and consumer behavior, specializing in baby and maternity products.in a short and brief paragraph, Based on the list of products sold on the website (e.g., baby care, feeding, clothing, maternity items, etc.), analyze customer preferences, purchasing trends, and seasonal demands.
+
+Provide predictions about future bestsellers and suggest strategic recommendations to optimize inventory, enhance marketing campaigns, and improve customer retention.
+
+Your analysis should be structured, insightful, and focused on actionable suggestions that align with current e-commerce trends.`;
+    const response = await this.client.chat.completions.create({
+      messages: [
+        { role: "system", content: "" },
+        { role: "user", content: prompt }
+      ],
+      model: "gpt-4o",
+      temperature: 1,
+      max_tokens: 4096,
+      top_p: 1
+    }).then((response) => {
+      console.log(response.choices[0].message.content);
+    })
+   
+      const raw = await response
+    // Affiche immédiatement toute la réponse
+
+    // Test : afficher la réponse après 1 seconde
+
+return null
+}
+
+
 
   // Méthode pour ajouter un produit au panier
   addToCart(product: Product): void {
@@ -43,37 +81,43 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  // Chargement des produits depuis le service
   loadProducts(): void {
     this.isLoading = true;
     this.error = null;
-
+  
     this.productService.getAllProducts().subscribe({
       next: (products) => {
         this.products = products;
-        this.filteredProducts = products; // Initialement, on affiche tous les produits
+  
+        // Déterminer les prix minimum et maximum
+        const prices = products.map(p => p.price);
+        this.minPrice = Math.min(...prices);
+        this.maxPrice = Math.max(...prices);
+  
+        // Initialiser les filtres avec les valeurs extrêmes
+        this.searchQuery = '';
+        this.filteredProducts = [...products];
+  
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load products';
+        this.error = 'Échec du chargement des produits';
         this.isLoading = false;
         console.error(err);
       }
     });
   }
-
-  // Filtrer les produits en fonction de la recherche et des critères de prix
+  
   filterProducts(): void {
+    const query = this.searchQuery?.toLowerCase() || '';
+    const min = this.minPrice ?? 0;
+    const max = this.maxPrice ?? Infinity;
+  
     this.filteredProducts = this.products.filter(product => {
-      // Filtrer par nom
-      const matchesName = product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-      // Filtrer par prix
-      const matchesPrice = 
-        (this.minPrice === null || product.price >= this.minPrice) &&
-        (this.maxPrice === null || product.price <= this.maxPrice);
-
+      const matchesName = product.name.toLowerCase().includes(query);
+      const matchesPrice = product.price >= min && product.price <= max;
       return matchesName && matchesPrice;
     });
   }
+  
 }

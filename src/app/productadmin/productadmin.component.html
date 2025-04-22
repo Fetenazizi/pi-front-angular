@@ -1,13 +1,13 @@
 <div class="admin-container">
   <h2>Gestion des Produits</h2>
 
-  <!-- Indicateur de chargement -->
+  <!-- Loading indicator -->
   <div *ngIf="isLoading" class="loading-indicator">
     <div class="spinner"></div>
     <span>Chargement en cours...</span>
   </div>
 
-  <!-- Formulaire d'ajout/modification -->
+  <!-- Add/Edit Form -->
   <div *ngIf="selectedProduct" class="edit-form">
     <h3>{{ isEditing ? 'Modifier' : 'Ajouter' }} un produit</h3>
 
@@ -85,17 +85,19 @@
         [disabled]="isLoading"
         accept="image/*"
       />
-      <button class="camera-button" type="button" (click)="startCamera()" *ngIf="!showCameraPreview">📷 Prendre une photo</button>
+      <button class="camera-button" type="button" (click)="startCamera()" *ngIf="!showCameraPreview">
+        📷 Prendre une photo
+      </button>
     </div>
 
-    <!-- Aperçu de la caméra -->
+    <!-- Camera Preview -->
     <div *ngIf="showCameraPreview" class="camera-container">
       <video id="camera-preview" autoplay></video>
       <button type="button" (click)="capturePhoto()">📸 Capturer</button>
     </div>
 
-    <!-- Aperçu de l'image -->
-    <div *ngIf="imagePreview" class="image-preview">
+    <!-- Image Preview -->
+    <div *If="imagePreview" class="image-preview">
       <img [src]="imagePreview" alt="Aperçu de l'image" />
     </div>
 
@@ -114,7 +116,6 @@
       >
         Annuler
       </button>
-      <!-- Nouveau bouton pour revenir à la liste -->
       <button
         type="button"
         (click)="cancelEdit()"
@@ -126,34 +127,49 @@
     </div>
   </div>
 
-  <!-- Bouton pour ajouter un produit et liste des produits affichés quand aucun produit n'est sélectionné -->
+  <!-- Product List View -->
   <div *ngIf="!selectedProduct && !isLoading">
-    <!-- Bouton d'ajout -->
     <div class="add-product-container">
       <button (click)="startAdd()" class="add-button">
         <i class="fas fa-plus"></i> Ajouter un produit
       </button>
     </div>
 
-    <!-- Liste des produits -->
-    <div class="product-list">
-      <div *ngFor="let product of products" class="product-item">
-        <div class="product-info">
-          <h3>{{ product.name }}</h3>
-          <p class="description">{{ product.description }}</p>
-          <p class="price">{{ product.price }} DT</p>
-          <p class="stock">Quantité disponible: {{ product.stockQuantity }}</p>
-        </div>
-
-        <div class="product-image" *ngIf="product.imageUrl">
-          <img [src]="product.imageUrl" alt="{{ product.name }}" />
-        </div>
-
-        <div class="product-actions">
-          <button (click)="startEdit(product)" [disabled]="isLoading">Modifier</button>
-          <button (click)="deleteProduct(product.idProduct)" [disabled]="isLoading">Supprimer</button>
-        </div>
-      </div>
+    <div class="product-table-container">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Prix (DT)</th>
+            <th>Quantité</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products">
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.price | number:'1.2-2' }}</td>
+            <td>{{ product.stockQuantity }}</td>
+            <td>
+              <img
+                *ngIf="product.imageUrl"
+                [src]="product.imageUrl"
+                alt="{{ product.name }}"
+                class="table-product-image"
+              />
+            </td>
+            <td>
+              <button (click)="startEdit(product)" class="edit-button">Modifier</button>
+              <button (click)="deleteProduct(product.idProduct)" class="delete-button">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

@@ -18,7 +18,9 @@ export class ProductAdminComponent implements OnInit {
   showCameraPreview = false;
   private videoStream: MediaStream | null = null;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -79,10 +81,10 @@ export class ProductAdminComponent implements OnInit {
       name: '', 
       description: '', 
       category: '',
-      stockQuantity: 0,  // Newly added
-      quantity: 0,       // Added to fix the error
+      stockQuantity: 0,
       price: 0,
-      imageUrl: ''
+      imageUrl: '',
+      quantity: 0
     };
     this.isEditing = false;
     this.imagePreview = null;
@@ -121,7 +123,6 @@ export class ProductAdminComponent implements OnInit {
   startCamera(): void {
     this.showCameraPreview = true;
     
-    // Wait for the view to update
     setTimeout(() => {
       const cameraPreviewElement = document.getElementById('camera-preview') as HTMLVideoElement;
       this.initializeCamera(cameraPreviewElement);
@@ -137,12 +138,10 @@ export class ProductAdminComponent implements OnInit {
         })
         .catch(error => {
           console.error('Camera error: ', error);
-          // Fall back to file input if camera fails
           this.showCameraPreview = false;
           document.getElementById('productImage')?.click();
         });
     } else {
-      // Browser doesn't support camera API, fall back to file input
       this.showCameraPreview = false;
       document.getElementById('productImage')?.click();
     }
@@ -181,7 +180,6 @@ export class ProductAdminComponent implements OnInit {
   private handleImageFile(file: File): void {
     this.selectedImage = file;
     
-    // Create a preview of the image
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.imagePreview = e.target.result;

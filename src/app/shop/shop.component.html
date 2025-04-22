@@ -54,3 +54,9 @@
     </div>
   </div>
 </div>
+
+
+<div class="chat-input-container">
+  <input type="text" #userPrompt placeholder="Ask a question..." class="chat-input" />
+  <button (click)="askQuestion(userPrompt.value)" class="send-button">Send</button>
+</div>
